@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>금지어 러시안 룰렛</title>
+  <style>
+    :root{
+      --bg:#0f1220;
+      --card:#171a2b;
+      --card2:#1f2340;
+      --text:#eef1ff;
+      --muted:#aeb6e5;
+      --line:rgba(255,255,255,.12);
+      --accent:#7c5cff;
+      --good:#2bd576;
+      --bad:#ff4d6d;
+      --warn:#ffcc00;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; background: radial-gradient(900px 600px at 20% 0%, rgba(124,92,255,.18), transparent 60%),
+                          radial-gradient(800px 600px at 90% 10%, rgba(43,213,118,.12), transparent 55%),
+                          var(--bg);
+      color:var(--text); font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      padding:18px;
+    }
+    .wrap{max-width:980px; margin:0 auto}
+    header{
+      display:flex; gap:12px; align-items:center; justify-content:space-between;
+      margin-bottom:14px;
+    }
+    .title h1{margin:0; font-size:20px; letter-spacing:.2px}
+    .title p{margin:6px 0 0; color:var(--muted); font-size:13px}
+    .row{display:grid; grid-template-columns: 1.1fr .9fr; gap:14px}
+    @media (max-width: 900px){ .row{grid-template-columns: 1fr} }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), transparent 40%),
+                  linear-gradient(180deg, var(--card), var(--card2));
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,.28);
+    }
+    .card h2{margin:0 0 10px; font-size:15px}
+    .muted{color:var(--muted); font-size:12px}
+    .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    @media (max-width: 520px){ .grid2{grid-template-columns:1fr} }
+
+    input, textarea, select{
+      width:100%;
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      color:var(--text);
+      border-radius:12px;
+      padding:10px 10px;
+      outline:none;
+      font-size:14px;
+    }
+    textarea{min-height:96px; resize:vertical}
+    label{display:block; font-size:12px; color:var(--muted); margin:8px 0 6px}
+
+    .btns{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
+    button{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.08);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      font-weight:700;
+      font-size:13px;
+      transition:.12s transform, .12s opacity, .12s background;
+    }
+    button:hover{transform: translateY(-1px); background: rgba(255,255,255,.12)}
+    button.primary{
+      background: rgba(124,92,255,.20);
+      border-color: rgba(124,92,255,.40);
+    }
+    button.danger{
+      background: rgba(255,77,109,.16);
+      border-color: rgba(255,77,109,.35);
+    }
+    button.good{
+      background: rgba(43,213,118,.14);
+      border-color: rgba(43,213,118,.35);
+    }
+    button:disabled{opacity:.5; cursor:not-allowed; transform:none}
+
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      font-size:12px;
+      color:var(--muted);
+      margin:6px 6px 0 0;
+    }
+    .pill b{color:var(--text)}
+    .hr{height:1px; background: var(--line); margin:12px 0}
+
+    .assignWrap{display:flex; gap:10px; align-items:stretch; flex-wrap:wrap}
+    .assignWrap > * {flex:1}
+    .big{
+      font-size:18px; font-weight:900; letter-spacing:.3px;
+    }
+
+    .timerBox{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding:12px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+    }
+    .timerBox .t{
+      display:flex; flex-direction:column; gap:4px;
+    }
+    .timerBox .time{
+      font-size:20px; font-weight:900;
+    }
+
+    .result{
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.18);
+      border-radius:16px;
+      padding:12px;
+    }
+    .result .headline{font-weight:900; font-size:14px}
+    .result .desc{color:var(--muted); font-size:12px; margin-top:6px; line-height:1.45}
+
+    .list{
+      display:grid; gap:8px;
+    }
+    .item{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.05);
+      border-radius:14px;
+      padding:10px;
+      display:flex; justify-content:space-between; gap:10px; align-items:flex-start;
+    }
+    .item .left{display:flex; flex-direction:column; gap:4px}
+    .item .who{font-weight:900}
+    .tag{
+      font-size:11px; padding:4px 8px; border-radius:999px; border:1px solid var(--line);
+      color:var(--muted);
+      white-space:nowrap;
+    }
+    .tag.bad{border-color: rgba(255,77,109,.35); background: rgba(255,77,109,.14); color:#ffd1db}
+    .tag.warn{border-color: rgba(255,204,0,.35); background: rgba(255,204,0,.12); color:#ffeaa7}
+    .tag.good{border-color: rgba(43,213,118,.35); background: rgba(43,213,118,.12); color:#caffdf}
+
+    footer{margin-top:14px; color:var(--muted); font-size:12px; line-height:1.5}
+    .kbd{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:11px; padding:2px 6px; border:1px solid var(--line); border-radius:8px; background: rgba(255,255,255,.06); color:var(--text)}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <h1>금지어 러시안 룰렛</h1>
+        <p>친구들 파티용 + 포트폴리오용. 금지어 배정 → 타이머 → 룰렛 벌칙.</p>
+      </div>
+      <div>
+        <button id="btnSave" class="good">저장</button>
+        <button id="btnLoad">불러오기</button>
+        <button id="btnReset" class="danger">초기화</button>
+      </div>
+    </header>
+
+    <div class="row">
+      <!-- LEFT -->
+      <section class="card">
+        <h2>1) 설정</h2>
+
+        <div class="grid2">
+          <div>
+            <label>참가자 이름 (쉼표/줄바꿈으로 구분)</label>
+            <textarea id="players" placeholder="예) 가민, 민지, 수진"></textarea>
+            <div class="muted">팁: 줄바꿈/쉼표/슬래시( / ) 다 됨</div>
+          </div>
+          <div>
+            <label>금지어 목록 (줄바꿈으로 입력)</label>
+            <textarea id="banned" placeholder="예) 진짜
+대박
+미쳤다
+아니
+그니까"></textarea>
+            <div class="muted">인원보다 금지어가 적으면 자동으로 일부 중복될 수 있음</div>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div>
+            <label>게임 시간</label>
+            <select id="duration">
+              <option value="600">10분</option>
+              <option value="900">15분</option>
+              <option value="1200" selected>20분</option>
+              <option value="1800">30분</option>
+              <option value="0">무제한(타이머 없음)</option>
+            </select>
+          </div>
+          <div>
+            <label>룰렛 위험도(벌칙 강도)</label>
+            <select id="risk">
+              <option value="easy">약</option>
+              <option value="mid" selected>중</option>
+              <option value="hard">강</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="btns">
+          <button id="btnAssign" class="primary">금지어 배정하기</button>
+          <button id="btnShuffle">재배정(셔플)</button>
+          <button id="btnReveal">내 금지어 보기(선택)</button>
+        </div>
+
+        <div class="hr"></div>
+
+        <h2>2) 진행</h2>
+        <div class="timerBox">
+          <div class="t">
+            <div class="muted">타이머</div>
+            <div id="timer" class="time">00:00</div>
+          </div>
+          <div class="btns" style="margin:0">
+            <button id="btnStart" class="good">시작</button>
+            <button id="btnPause">일시정지</button>
+            <button id="btnStop" class="danger">종료</button>
+          </div>
+        </div>
+
+        <div class="assignWrap" style="margin-top:10px">
+          <div>
+            <label>지금 걸린 사람(선택)</label>
+            <select id="who">
+              <option value="">(선택)</option>
+            </select>
+          </div>
+          <div>
+            <label>무슨 일로 걸림?</label>
+            <select id="why">
+              <option value="금지어 말함" selected>금지어 말함</option>
+              <option value="금지행동 함">금지행동 함</option>
+              <option value="의심 받음(투표로)">의심 받음(투표로)</option>
+              <option value="기타">기타</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="btns">
+          <button id="btnRoulette" class="primary">🎰 룰렛 돌리기(벌칙)</button>
+          <button id="btnLog">📌 기록만 남기기</button>
+        </div>
+
+        <div class="result" style="margin-top:10px">
+          <div class="headline" id="lastHeadline">아직 룰렛 결과 없음</div>
+          <div class="desc" id="lastDesc">“룰렛 돌리기”를 누르면 벌칙이 랜덤으로 나와.</div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="muted">
+          운영 팁:
+          <span class="pill"><b>1판</b> 10~20분 추천</span>
+          <span class="pill"><b>벌칙</b> 5~15개면 충분</span>
+          <span class="pill"><b>치트</b> “내 금지어 보기”는 각자 폰으로 보게 하면 꿀</span>
+        </div>
+      </section>
+
+      <!-- RIGHT -->
+      <section class="card">
+        <h2>배정표</h2>
+        <div id="assignments" class="list"></div>
+
+        <div class="hr"></div>
+
+        <h2>기록(로그)</h2>
+        <div class="muted">누가 언제 걸렸는지 + 룰렛 결과가 쌓여.</div>
+        <div style="height:10px"></div>
+        <div id="log" class="list"></div>
+
+        <div class="btns">
+          <button id="btnClearLog" class="danger">로그 비우기</button>
+          <button id="btnExport">로그 복사</button>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      <div>📌 저장/불러오기: 브라우저에 자동 저장됨 (<span class="kbd">localStorage</span>)</div>
+      <div>원하면 다음 단계로: “멀티폰 개인 열람 모드”, “투표 기능”, “벌칙 커스텀 편집 UI”, “QR 공유”까지 확장 가능.</div>
+    </footer>
+  </div>
+
+  <script>
+    // ---------- Helpers ----------
+    const $ = (id) => document.getElementById(id);
+    const nowStr = () => {
+      const d = new Date();
+      const pad = (n)=> String(n).padStart(2,"0");
+      return `${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    };
+    const splitNames = (s) => s
+      .split(/[\n,\/]+/g)
+      .map(v => v.trim())
+      .filter(Boolean);
+
+    const splitLines = (s) => s
+      .split(/\n+/g)
+      .map(v => v.trim())
+      .filter(Boolean);
+
+    const shuffle = (arr) => {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    };
+
+    const fmtTime = (sec) => {
+      sec = Math.max(0, Math.floor(sec));
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return String(m).padStart(2,'0') + ":" + String(s).padStart(2,'0');
+    };
+
+    // ---------- State ----------
+    const state = {
+      players: [],
+      banned: [],
+      assign: {},   // {player: word}
+      log: [],      // {t, who, why, resultTag, resultText}
+      timer: {
+        duration: 1200,
+        left: 1200,
+        running: false,
+        interval: null,
+        startedAt: null,
+        unlimited: false
+      },
+      risk: "mid"
+    };
+
+    // ---------- Roulette pools ----------
+    const POOLS = {
+      easy: [
+        {tag:"warn", text:"물 한 컵 마시기"},
+        {tag:"warn", text:"칭찬 3개 하기"},
+        {tag:"warn", text:"애교 5초 하기"},
+        {tag:"warn", text:"다음 판 간식 담당"},
+        {tag:"warn", text:"바닥에 손 짚고 스쿼트 10개"},
+        {tag:"warn", text:"노래 한 소절 부르기"},
+        {tag:"warn", text:"최근 사진 1장 공개(원치 않으면 대체 벌칙)"},
+      ],
+      mid: [
+        {tag:"bad", text:"(술 있으면) 한 잔 / 없으면 물 한 컵 원샷"},
+        {tag:"bad", text:"진실게임 질문 1개 받고 무조건 대답"},
+        {tag:"bad", text:"다음 라운드 동안 말수 제한(3문장만 가능)"},
+        {tag:"bad", text:"이름으로 2행시"},
+        {tag:"bad", text:"휴대폰 갤러리 10번째 사진 보여주기(거부 시 벌칙 2배)"},
+        {tag:"bad", text:"다음 판 배팅(간식/음료) 2배"},
+        {tag:"warn", text:"10초 동안 ‘감정 없는 뉴스 앵커’처럼 말하기"},
+        {tag:"warn", text:"팔굽혀펴기 10개 or 플랭크 30초"},
+      ],
+      hard: [
+        {tag:"bad", text:"(술) 2잔 / (무알콜) 물 2컵"},
+        {tag:"bad", text:"인생 흑역사 1개 공개"},
+        {tag:"bad", text:"랜덤 연락처(친구/가족 제외)에게 ‘뭐해?’ 보내기 (대체 벌칙 가능)"},
+        {tag:"bad", text:"다음 판 ‘추가 금지어’ 1개 더 부여"},
+        {tag:"bad", text:"다음 3분간 웃으면 벌칙 1개 추가"},
+        {tag:"bad", text:"즉시 투표: 가장 수상한 사람 1명 추가 벌칙"},
+        {tag:"warn", text:"벌칙 젠가 1회 + 실패 시 추가"},
+      ]
+    };
+
+    // ---------- UI Render ----------
+    function renderPlayersSelect(){
+      const sel = $("who");
+      sel.innerHTML = `<option value="">(선택)</option>` + state.players.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
+    }
+
+    function renderAssignments(){
+      const box = $("assignments");
+      const keys = Object.keys(state.assign);
+      if(keys.length === 0){
+        box.innerHTML = `<div class="muted">아직 배정이 없어. “금지어 배정하기”를 눌러줘.</div>`;
+        return;
+      }
+      box.innerHTML = keys.map(p => {
+        const w = state.assign[p];
+        return `
+          <div class="item">
+            <div class="left">
+              <div class="who">${escapeHtml(p)}</div>
+              <div class="muted">금지어: <b style="color:var(--text)">${escapeHtml(w)}</b></div>
+            </div>
+            <div class="tag good">배정됨</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderLog(){
+      const box = $("log");
+      if(state.log.length === 0){
+        box.innerHTML = `<div class="muted">기록이 아직 없어. 룰렛을 돌리거나 기록을 남겨봐.</div>`;
+        return;
+      }
+      box.innerHTML = state.log.slice().reverse().map(e => `
+        <div class="item">
+          <div class="left">
+            <div class="who">${escapeHtml(e.who || "누군가")}</div>
+            <div class="muted">${escapeHtml(e.t)} · ${escapeHtml(e.why || "사유 없음")}</div>
+            ${e.resultText ? `<div class="muted">결과: <b style="color:var(--text)">${escapeHtml(e.resultText)}</b></div>` : ``}
+          </div>
+          <div class="tag ${escapeHtml(e.resultTag || 'warn')}">${escapeHtml(tagLabel(e.resultTag))}</div>
+        </div>
+      `).join("");
+    }
+
+    function tagLabel(tag){
+      if(tag === "bad") return "벌칙";
+      if(tag === "good") return "보상";
+      return "가벼움";
+    }
+
+    function renderTimer(){
+      $("timer").textContent = state.timer.unlimited ? "∞" : fmtTime(state.timer.left);
+    }
+
+    function setLastResult(head, desc){
+      $("lastHeadline").textContent = head;
+      $("lastDesc").textContent = desc;
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    // ---------- Logic ----------
+    function syncFromInputs(){
+      state.players = splitNames($("players").value);
+      state.banned  = splitLines($("banned").value);
+      state.timer.duration = Number($("duration").value);
+      state.timer.unlimited = (state.timer.duration === 0);
+      state.risk = $("risk").value;
+      if(!state.timer.unlimited){
+        state.timer.left = state.timer.duration;
+      }
+      renderPlayersSelect();
+    }
+
+    function assignWords(){
+      syncFromInputs();
+      if(state.players.length < 2){
+        alert("참가자를 최소 2명 이상 넣어줘!");
+        return;
+      }
+      if(state.banned.length < 1){
+        alert("금지어를 최소 1개 이상 넣어줘!");
+        return;
+      }
+
+      const players = [...state.players];
+      const words = [...state.banned];
+
+      shuffle(players);
+      shuffle(words);
+
+      const assign = {};
+      for(let i=0; i<players.length; i++){
+        // 인원이 더 많으면 단어를 다시 섞어서 재사용
+        const w = words[i % words.length];
+        assign[players[i]] = w;
+      }
+      state.assign = assign;
+
+      renderAssignments();
+      setLastResult("배정 완료 ✅", "각자 자기 금지어를 확인하고 게임을 시작해. (보여주기 싫으면 ‘내 금지어 보기’로 한 명씩 확인)");
+      saveState();
+    }
+
+    function reshuffle(){
+      if(Object.keys(state.assign).length === 0){
+        assignWords();
+        return;
+      }
+      // 기존 플레이어/금지어 그대로 다시 배정
+      const players = Object.keys(state.assign);
+      const words = Object.values(state.assign);
+      shuffle(players);
+      shuffle(words);
+      const assign = {};
+      for(let i=0; i<players.length; i++){
+        assign[players[i]] = words[i % words.length];
+      }
+      state.assign = assign;
+      renderAssignments();
+      setLastResult("재배정 완료 🔁", "같은 단어 풀로 다시 섞었어.");
+      saveState();
+    }
+
+    function revealPersonal(){
+      if(Object.keys(state.assign).length === 0){
+        alert("먼저 배정을 해줘!");
+        return;
+      }
+      const name = prompt("자기 이름을 정확히 입력해줘 (배정표에서 확인 가능)");
+      if(!name) return;
+      const w = state.assign[name.trim()];
+      if(!w){
+        alert("이름이 배정표에 없어. 철자 확인!");
+        return;
+      }
+      alert(`[${name}]의 금지어는:  "${w}"\n\n(이 화면을 다른 사람에게 보여주지 마!)`);
+    }
+
+    function startTimer(){
+      syncFromInputs();
+      if(state.timer.running) return;
+
+      state.timer.running = true;
+      $("btnStart").disabled = true;
+
+      if(state.timer.unlimited){
+        $("timer").textContent = "∞";
+        return;
+      }
+
+      if(state.timer.left <= 0) state.timer.left = state.timer.duration;
+
+      state.timer.interval = setInterval(() => {
+        state.timer.left--;
+        renderTimer();
+        if(state.timer.left <= 0){
+          stopTimer();
+          setLastResult("타이머 종료 ⏰", "라운드 끝! 정산하고 다음 판으로 가자.");
+          // 종료 시 가벼운 이벤트 로그
+          state.log.push({
+            t: nowStr(),
+            who: "(전체)",
+            why: "타이머 종료",
+            resultTag: "warn",
+            resultText: "라운드 종료"
+          });
+          renderLog();
+          saveState();
+        }
+      }, 1000);
+
+      setLastResult("게임 시작 ▶️", "금지어 나오면 바로 ‘룰렛 돌리기’!");
+      saveState();
+    }
+
+    function pauseTimer(){
+      if(!state.timer.running) return;
+      state.timer.running = false;
+      $("btnStart").disabled = false;
+      if(state.timer.interval){
+        clearInterval(state.timer.interval);
+        state.timer.interval = null;
+      }
+      setLastResult("일시정지 ⏸️", "잠깐 쉬고 다시 시작해도 됨.");
+      saveState();
+    }
+
+    function stopTimer(){
+      state.timer.running = false;
+      $("btnStart").disabled = false;
+      if(state.timer.interval){
+        clearInterval(state.timer.interval);
+        state.timer.interval = null;
+      }
+      if(!state.timer.unlimited){
+        state.timer.left = state.timer.duration;
+        renderTimer();
+      }
+      saveState();
+    }
+
+    function spinRoulette(){
+      syncFromInputs();
+
+      const who = $("who").value || "(미선택)";
+      const why = $("why").value || "사유 없음";
+      const pool = POOLS[state.risk] || POOLS.mid;
+
+      // 러시안 룰렛 느낌: "세이프"도 가끔 나오게
+      const roll = Math.random();
+      let result;
+      if(state.risk === "easy"){
+        result = (roll < 0.15)
+          ? {tag:"good", text:"세이프! 면제 😇"}
+          : pool[Math.floor(Math.random()*pool.length)];
+      } else if(state.risk === "mid"){
+        result = (roll < 0.10)
+          ? {tag:"good", text:"세이프! 대신 다음 사람 지목 😏"}
+          : pool[Math.floor(Math.random()*pool.length)];
+      } else {
+        result = (roll < 0.06)
+          ? {tag:"good", text:"세이프! 오늘 운 미쳤다 🍀"}
+          : pool[Math.floor(Math.random()*pool.length)];
+      }
+
+      setLastResult(`${who} → ${result.text}`, `사유: ${why} · (${nowStr()})`);
+
+      state.log.push({
+        t: nowStr(),
+        who,
+        why,
+        resultTag: result.tag,
+        resultText: result.text
+      });
+
+      renderLog();
+      saveState();
+    }
+
+    function logOnly(){
+      const who = $("who").value || "(미선택)";
+      const why = $("why").value || "사유 없음";
+      state.log.push({
+        t: nowStr(),
+        who,
+        why,
+        resultTag: "warn",
+        resultText: ""
+      });
+      setLastResult("기록 저장 📌", `${who} / ${why} 로 기록만 남겼어.`);
+      renderLog();
+      saveState();
+    }
+
+    function clearLog(){
+      if(!confirm("로그를 전부 지울까?")) return;
+      state.log = [];
+      renderLog();
+      setLastResult("로그 초기화 🧹", "기록이 비워졌어.");
+      saveState();
+    }
+
+    function exportLog(){
+      if(state.log.length === 0){
+        alert("복사할 로그가 없어!");
+        return;
+      }
+      const text = state.log.map(e => {
+        const r = e.resultText ? ` | 결과: ${e.resultText}` : "";
+        return `${e.t} | ${e.who} | ${e.why}${r}`;
+      }).join("\n");
+
+      navigator.clipboard?.writeText(text).then(() => {
+        alert("로그를 클립보드에 복사했어!");
+      }).catch(() => {
+        // fallback
+        prompt("아래 텍스트를 복사해줘:", text);
+      });
+    }
+
+    // ---------- Persistence ----------
+    const KEY = "banword_russian_v1";
+
+    function saveState(){
+      const payload = {
+        playersText: $("players").value,
+        bannedText: $("banned").value,
+        duration: $("duration").value,
+        risk: $("risk").value,
+        assign: state.assign,
+        log: state.log,
+        timerLeft: state.timer.left
+      };
+      localStorage.setItem(KEY, JSON.stringify(payload));
+    }
+
+    function loadState(){
+      const raw = localStorage.getItem(KEY);
+      if(!raw){
+        alert("저장된 데이터가 없어!");
+        return;
+      }
+      const p = JSON.parse(raw);
+      $("players").value = p.playersText || "";
+      $("banned").value = p.bannedText || "";
+      if(p.duration != null) $("duration").value = String(p.duration);
+      if(p.risk != null) $("risk").value = String(p.risk);
+
+      syncFromInputs();
+      state.assign = p.assign || {};
+      state.log = p.log || [];
+      if(typeof p.timerLeft === "number") state.timer.left = p.timerLeft;
+
+      renderPlayersSelect();
+      renderAssignments();
+      renderLog();
+      renderTimer();
+      setLastResult("불러오기 완료 ✅", "이전 상태로 복구했어.");
+    }
+
+    function resetAll(){
+      if(!confirm("정말 초기화할까? 배정/로그/입력 다 날아감!")) return;
+
+      stopTimer();
+      $("players").value = "";
+      $("banned").value = "";
+      $("duration").value = "1200";
+      $("risk").value = "mid";
+      state.players = [];
+      state.banned = [];
+      state.assign = {};
+      state.log = [];
+      syncFromInputs();
+      renderAssignments();
+      renderLog();
+      renderTimer();
+      setLastResult("초기화 완료 🧊", "새로 시작하자.");
+      localStorage.removeItem(KEY);
+    }
+
+    // ---------- Wire events ----------
+    $("btnAssign").addEventListener("click", assignWords);
+    $("btnShuffle").addEventListener("click", reshuffle);
+    $("btnReveal").addEventListener("click", revealPersonal);
+
+    $("btnStart").addEventListener("click", startTimer);
+    $("btnPause").addEventListener("click", pauseTimer);
+    $("btnStop").addEventListener("click", stopTimer);
+
+    $("btnRoulette").addEventListener("click", spinRoulette);
+    $("btnLog").addEventListener("click", logOnly);
+
+    $("btnClearLog").addEventListener("click", clearLog);
+    $("btnExport").addEventListener("click", exportLog);
+
+    $("btnSave").addEventListener("click", () => { saveState(); alert("저장했어!"); });
+    $("btnLoad").addEventListener("click", loadState);
+    $("btnReset").addEventListener("click", resetAll);
+
+    // ---------- Init defaults ----------
+    function initDemo(){
+      // 기본 예시값 넣어두기 (처음 접속일 때만)
+      const raw = localStorage.getItem(KEY);
+      if(raw) {
+        loadState();
+        return;
+      }
+      $("players").value = "가민\n민지\n수진";
+      $("banned").value = "진짜\n대박\n아니\n그니까\n미쳤다\n아마도\n솔직히";
+      $("duration").value = "1200";
+      $("risk").value = "mid";
+      syncFromInputs();
+      renderAssignments();
+      renderLog();
+      renderTimer();
+      setLastResult("준비 완료 🎉", "참가자/금지어 입력 → ‘금지어 배정하기’ → 시작!");
+    }
+    initDemo();
+  </script>
+</body>
+</html>
